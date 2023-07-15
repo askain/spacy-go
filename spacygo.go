@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	pb "github.com/yash1994/spacy-go/go-stubs"
+	pb "github.com/askain/spacy-go/go-stubs"
 
 	"google.golang.org/grpc"
 )

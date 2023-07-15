@@ -1,4 +1,4 @@
-module github.com/yash1994/spacy-go
+module github.com/askain/spacy-go
 
 go 1.14
 
