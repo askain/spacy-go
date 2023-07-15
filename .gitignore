@@ -4,3 +4,4 @@ api/__pycache__*
 compile-protos.sh
 server*
 coverage.txt
+.venv*

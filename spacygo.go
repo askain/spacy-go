@@ -3,14 +3,11 @@ package spacygo
 import (
 	"context"
 	"log"
-	"os"
-	"path"
 	"time"
 
 	pb "github.com/yash1994/spacy-go/go-stubs"
 
 	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials"
 )
 
 type pattern struct {
@@ -36,7 +33,7 @@ func Load(modelName string) (r *pb.TextResponse, err error) {
 	if modelName == "" {
 		modelName = defaultModel
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	r, err = grpcClient.LoadModel(ctx, &pb.TextRequest{Text: modelName})
@@ -50,7 +47,7 @@ func Load(modelName string) (r *pb.TextResponse, err error) {
 
 // Nlp : annotate text
 func Nlp(text string) (r *pb.ParsedNLPRes, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	r, err = grpcClient.NlpProcess(ctx, &pb.TextRequest{Text: text})
@@ -63,7 +60,7 @@ func Nlp(text string) (r *pb.ParsedNLPRes, err error) {
 
 // Similarity : compute vector similarity between two texts
 func Similarity(texta string, textb string) (r *pb.TextSimilarity, err error) {
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	r, err = grpcClient.DocSimilarity(ctx, &pb.TextSimilarityRequest{Texta: texta, Textb: textb})
@@ -86,7 +83,7 @@ func PatternMatch(matchrules []rule, text string) (r *pb.Matches, err error) {
 		}
 		rulepb := &pb.Rule{Id: mrule.id, Patterns: tempRuleArray}
 
-		arctx, arcancle := context.WithTimeout(context.Background(), time.Second)
+		arctx, arcancle := context.WithTimeout(context.Background(), time.Minute)
 		defer arcancle()
 
 		arresp, arerror := grpcClient.AddRule(arctx, rulepb)
@@ -98,12 +95,12 @@ func PatternMatch(matchrules []rule, text string) (r *pb.Matches, err error) {
 		}
 
 	}
-	ctx, cancel := context.WithTimeout(context.Background(), time.Second)
+	ctx, cancel := context.WithTimeout(context.Background(), time.Minute)
 	defer cancel()
 
 	r, err = grpcClient.GetMatches(ctx, &pb.TextRequest{Text: text})
 
-	rsctx, rscancel := context.WithTimeout(context.Background(), time.Second)
+	rsctx, rscancel := context.WithTimeout(context.Background(), time.Minute)
 
 	resetresp, _ := grpcClient.ResetMatcher(rsctx, &pb.TextRequest{Text: ""})
 	defer rscancel()
@@ -123,22 +120,24 @@ func PatternMatch(matchrules []rule, text string) (r *pb.Matches, err error) {
 func init() {
 
 	// Set up a connection to the server.
-	var tslFilePath string
+	// var tslFilePath string
 
-	if _, oserr := os.Stat("server.crt"); oserr == nil {
-		tslFilePath = "server.crt"
-	} else {
-		tslFilePath = path.Join(os.Getenv("GOPATH"), "src/github.com/yash1994/spacy-go/server.crt")
-	}
+	// if _, oserr := os.Stat("server.crt"); oserr == nil {
+	// 	tslFilePath = "server.crt"
+	// } else {
+	// 	tslFilePath = path.Join(os.Getenv("GOPATH"), "src/github.com/yash1994/spacy-go/server.crt")
+	// }
 
-	// SSL Credentials
-	clientCert, err := credentials.NewClientTLSFromFile(tslFilePath, "")
+	// // SSL Credentials
+	// clientCert, err := credentials.NewClientTLSFromFile(tslFilePath, "")
 
-	if err != nil {
-		log.Fatalf("Could not create client SSL certificate: %v", err)
-	}
+	// if err != nil {
+	// 	log.Fatalf("Could not create client SSL certificate: %v", err)
+	// }
 
-	grpcConnection, grpcConnError = grpc.Dial(serverAddr, grpc.WithTransportCredentials(clientCert), grpc.WithBlock())
+	// grpcConnection, grpcConnError = grpc.Dial(serverAddr, grpc.WithTransportCredentials(clientCert), grpc.WithBlock())
+
+	grpcConnection, grpcConnError = grpc.Dial(serverAddr, grpc.WithInsecure(), grpc.WithBlock())
 
 	if grpcConnError != nil {
 		log.Fatalf("Could not connect to server: %v", grpcConnError)

@@ -82,31 +82,32 @@ class NlpService(nlp_pb2_grpc.NlpServicer):
 
 def serve(server_address):
 
-    private_key_path = os.path.join(
-        os.environ["GOPATH"], "src/github.com/yash1994/spacy-go/server.key"
-    )
-    certificate_chain_path = os.path.join(
-        os.environ["GOPATH"], "src/github.com/yash1994/spacy-go/server.crt"
-    )
+    # private_key_path = os.path.join(
+    #     os.environ["GOPATH"], "src/github.com/yash1994/spacy-go/server.key"
+    # )
+    # certificate_chain_path = os.path.join(
+    #     os.environ["GOPATH"], "src/github.com/yash1994/spacy-go/server.crt"
+    # )
 
-    if not os.path.exists(private_key_path):
-        private_key_path = "server.key"
+    # if not os.path.exists(private_key_path):
+    #     private_key_path = "server.key"
 
-    if not os.path.exists(certificate_chain_path):
-        certificate_chain_path = "server.crt"
+    # if not os.path.exists(certificate_chain_path):
+    #     certificate_chain_path = "server.crt"
 
-    with open(private_key_path, "rb") as f:
-        private_key = f.read()
-    with open(certificate_chain_path, "rb") as f:
-        certificate_chain = f.read()
+    # with open(private_key_path, "rb") as f:
+    #     private_key = f.read()
+    # with open(certificate_chain_path, "rb") as f:
+    #     certificate_chain = f.read()
 
-    server_credentials = grpc.ssl_server_credentials(
-        ((private_key, certificate_chain,),)
-    )
+    # server_credentials = grpc.ssl_server_credentials(
+    #     ((private_key, certificate_chain,),)
+    # )
 
     server = grpc.server(futures.ThreadPoolExecutor(max_workers=10))
     nlp_pb2_grpc.add_NlpServicer_to_server(NlpService(), server)
-    server.add_secure_port(server_address, server_credentials)
+    # server.add_secure_port(server_address, server_credentials)
+    server.add_insecure_port(server_address)
     server.start()
     try:
         while True:
