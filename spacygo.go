@@ -2,7 +2,9 @@ package spacygo
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 	"time"
 
 	pb "github.com/askain/spacy-go/go-stubs"
@@ -118,6 +120,13 @@ func PatternMatch(matchrules []rule, text string) (r *pb.Matches, err error) {
 }
 
 func init() {
+
+	if os.Getenv("USE_SPACYGO") == "0" {
+		fmt.Println("SpacyGO is disabled.")
+		return
+	}
+
+	fmt.Println("SpacyGO is enabled. The gRPC client will try to connect the server before run your main function.")
 
 	// Set up a connection to the server.
 	// var tslFilePath string
