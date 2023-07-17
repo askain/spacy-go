@@ -12,9 +12,17 @@ And also extended network timeout for better stability.
 
 <br>
 
-Test on
+Tested on
 - python 3.8
 - go1.20.6
+
+<br>
+
+### Install GO client
+
+```bash
+go get -v "github.com/askain/spacy-go"
+```
 
 <br>
 
@@ -28,11 +36,7 @@ python -m spacy download en_core_web_sm
 python api/server.py
 ```
 
-### Install GO client
-
-```bash
-go get -v "github.com/askain/spacy-go"
-```
+<br>
 
 ### Use GO client
 
@@ -75,4 +79,24 @@ func main() {
 
 	fmt.Printf("text similarity between %v and %v is %v", texta, textb, textSimilarity.GetSimilarity())
 }
+```
+
+<br>
+
+Run your own module.
+
+Run the gRPC server before this or your command will be stuck.
+
+```bash
+go run yourfile.go
+```
+
+<br>
+
+Run your main function but temporary disable Spacy-Go.
+
+It is OK not to run the gRPC server.
+
+```bash
+USE_SPACYGO=0 go run yourfile.go
 ```
